@@ -19,7 +19,8 @@ exports.readFile = filePath => {
     //
     regions: {},
     itemTypes: {},
-    monthlyPriority: {}
+    monthlyPriority: {},
+    monthlyShippingTime: {}
   }
 
   // no need to read the first line
@@ -59,9 +60,11 @@ exports.readFile = filePath => {
       accountant.calcStatGroupByItemTypes(summaryObj.itemTypes, orderObj);
 
       // Number of orders for each Priority by Month / Year
-      accountant.calcStatGroupByMonthlyPriority(summaryObj.monthlyPriority, orderObj)
+      accountant.calcStatGroupByMonthlyPriority(summaryObj.monthlyPriority, orderObj);
+
 
       // Ship days, number of orders etc by Month / Year
+      accountant.calcStatGroupByMonthlyShippingTime(summaryObj.monthlyShippingTime, orderObj);
     }
 
 
@@ -72,7 +75,8 @@ exports.readFile = filePath => {
 
     // console.log(JSON.stringify(summaryObj.regions, null, '    '))
     // console.log(JSON.stringify(summaryObj.itemTypes, null, '    '))
-    console.log(JSON.stringify(summaryObj.monthlyPriority, null, '    '))
+    // console.log(JSON.stringify(summaryObj.monthlyPriority, null, '    '))
+    console.log(JSON.stringify(summaryObj.monthlyShippingTime, null, '    '))
 
 
   });;

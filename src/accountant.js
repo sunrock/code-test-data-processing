@@ -5,7 +5,7 @@ const
 
 const
   PRIORITY_LOW = 'L',
-  PRIORITY_MIDIUM = 'M',
+  PRIORITY_MEDIUM = 'M',
   PRIORITY_HIGH = 'H',
   PRIORITY_CRITICAL = 'C'
 
@@ -23,20 +23,22 @@ exports.calcStatGroupByRegion = (regionsListObj, {
     Total: {},
     Countries: {}
   };
-  const regionObj = regionsListObj[region];
-  calcTotalRevenueCostProfit(regionObj.Total, revenue, cost, profit);
+  calcTotalRevenueCostProfit(regionsListObj[region].Total, revenue, cost, profit);
 
   // group by countries in each region
-  if (!(country in regionObj)) regionObj.Countries[country] = {
-    Total: {},
-    ItemTypes: {}
-  };
-  const countryObj = regionObj.Countries[country];
-  calcTotalRevenueCostProfit(countryObj.Total, revenue, cost, profit);
+  if (!regionsListObj[region].Countries[country]) {
+    regionsListObj[region].Countries[country] = {
+      Total: {},
+      ItemTypes: {}
+    };
+  }
+  calcTotalRevenueCostProfit(regionsListObj[region].Countries[country].Total, revenue, cost, profit);
 
   // group by item types in each country
-  if (!(itemType in countryObj)) countryObj.ItemTypes[itemType] = {};
-  calcTotalRevenueCostProfit(countryObj.ItemTypes[itemType], revenue, cost, profit);
+  if (!regionsListObj[region].Countries[country].ItemTypes[itemType]) {
+    regionsListObj[region].Countries[country].ItemTypes[itemType] = {};
+  }
+  calcTotalRevenueCostProfit(regionsListObj[region].Countries[country].ItemTypes[itemType], revenue, cost, profit);
 }
 
 // ItemTypes Summary
@@ -47,15 +49,57 @@ exports.calcStatGroupByItemTypes = (itemTypesListObj, { itemType, revenue, cost,
 
 // Number of orders by Priority each month
 exports.calcStatGroupByMonthlyPriority = (priorityObj, { year, month, priority }) => {
-  if (!(year in priorityObj)) priorityObj[year] = {}
-  if (!(month in priorityObj)) {
+  if (!(year in priorityObj)) priorityObj[year] = {};
+  if (!priorityObj[year][month]) {
     priorityObj[year][month] = {};
-    priorityObj[year][month][PRIORITY_LOW] = 0;
-    priorityObj[year][month][PRIORITY_MIDIUM] = 0;
-    priorityObj[year][month][PRIORITY_HIGH] = 0;
-    priorityObj[year][month][PRIORITY_CRITICAL] = 0;
+    const mlyPriorityObj = priorityObj[year][month];
+    mlyPriorityObj[PRIORITY_LOW] = 0;
+    mlyPriorityObj[PRIORITY_MEDIUM] = 0;
+    mlyPriorityObj[PRIORITY_HIGH] = 0;
+    mlyPriorityObj[PRIORITY_CRITICAL] = 0;
   }
   priorityObj[year][month][priority] += 1;
+}
+
+// Monthly Shipping and Order Summary
+exports.calcStatGroupByMonthlyShippingTime = (shipObj, { year, month, region, country, shipDays }) => {
+  if (!(year in shipObj)) shipObj[year] = {};
+
+  if (!shipObj[year][month]) {
+    shipObj[year][month] = {};
+    initShipStatObj(shipObj[year][month]);
+    shipObj[year][month].Regions = {};
+  }
+
+  // Group by monthly Region Shipment
+
+  if (!shipObj[year][month].Regions[region]) {
+    shipObj[year][month].Regions[region] = {};
+    initShipStatObj(shipObj[year][month].Regions[region]);
+    shipObj[year][month].Regions[region].Countries = {};
+  }
+
+
+  if (!shipObj[year][month].Regions[region].Countries[country]) {
+    shipObj[year][month].Regions[region].Countries[country] = {};
+    initShipStatObj(shipObj[year][month].Regions[region].Countries[country]);
+  }
+
+  // inc number of Orders & calc average time of Shipment
+  const countryObj = shipObj[year][month].Regions[region].Countries[country];
+
+  if (countryObj.NumberOfOrders === 0) {
+    shipObj[year][month].Regions[region].Countries[country].AverageDaysToShip = shipDays;
+  } else {
+    const avgValue = (countryObj.AverageDaysToShip * countryObj.NumberOfOrders + shipDays) / (countryObj.NumberOfOrders + 1);
+    shipObj[year][month].Regions[region].Countries[country].AverageDaysToShip = format100thDecimal(avgValue);
+  }
+  shipObj[year][month].Regions[region].Countries[country].NumberOfOrders += 1;
+}
+
+initShipStatObj = (targetObj) => {
+  targetObj.AverageDaysToShip = 0;
+  targetObj.NumberOfOrders = 0;
 }
 
 
@@ -70,7 +114,11 @@ const calcSingleTotalValue = (subSumObj, key, value) => {
   // Round to the nearest 100th
   if (key in subSumObj) {
     const sumValue = subSumObj[key] + Number(value);
-    subSumObj[key] = Math.round(sumValue * 100) / 100;
+    subSumObj[key] = format100thDecimal(sumValue);
   }
   else subSumObj[key] = Number(value)
+}
+
+const format100thDecimal = value => {
+  return Math.round(value * 100) / 100
 }

@@ -14,7 +14,9 @@ const questions =
   ]
 }
 
-const csvFilePath = './data/small-data.csv';
+// const csvFilePath = './data/medium-data.csv';
+const csvFilePath = './data/node-data-processing-medium-data.csv';
+
 fileReader.readFile(csvFilePath)
 
 // inquirer.prompt(questions)
