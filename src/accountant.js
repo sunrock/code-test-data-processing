@@ -95,14 +95,13 @@ exports.calcStatGroupByMonthlyShippingTime = (shipObj, { year, month, region, co
     shipObj[year][month].Regions[region].Countries[country].AverageDaysToShip = format100thDecimal(avgValue);
   }
   shipObj[year][month].Regions[region].Countries[country].NumberOfOrders += 1;
+
+
+  calcShipmentValue(shipObj[year][month].Regions[region].Countries[country], shipDays);
+  calcShipmentValue(shipObj[year][month].Regions[region], shipDays);
+  calcShipmentValue(shipObj[year][month], shipDays);
+
 }
-
-initShipStatObj = (targetObj) => {
-  targetObj.AverageDaysToShip = 0;
-  targetObj.NumberOfOrders = 0;
-}
-
-
 
 const calcTotalRevenueCostProfit = (subSumObj, revenue, cost, profit) => {
   calcSingleTotalValue(subSumObj, TOTAL_REVENUE, revenue);
@@ -121,4 +120,19 @@ const calcSingleTotalValue = (subSumObj, key, value) => {
 
 const format100thDecimal = value => {
   return Math.round(value * 100) / 100
+}
+
+const initShipStatObj = targetObj => {
+  targetObj.AverageDaysToShip = 0;
+  targetObj.NumberOfOrders = 0;
+}
+
+const calcShipmentValue = (shipObj, shipDays) => {
+  if (shipObj.NumberOfOrders === 0) {
+    shipObj.AverageDaysToShip = shipDays;
+  } else {
+    const avgValue = (shipObj.AverageDaysToShip * shipObj.NumberOfOrders + shipDays) / (shipObj.NumberOfOrders + 1);
+    shipObj.AverageDaysToShip = format100thDecimal(avgValue);
+  }
+  shipObj.NumberOfOrders += 1;
 }
