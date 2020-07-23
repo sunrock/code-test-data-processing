@@ -28,8 +28,8 @@ exports.formatLineData = (line) => {
 
   orderObj.shipDays = getShipDays(orderObj.startDate, orderObj.finishDate);
 
-  // console.log(orderObj.shipDays);
-  // console.log("============================================");
+  orderObj.year = getYearOfOrder(orderObj.startDate);
+  orderObj.month = getMonthOfOrder(orderObj.startDate);
 
   return orderObj;
 }
@@ -40,4 +40,13 @@ const getShipDays = (startDateStr, finishDateStr) => {
   const timeBetween = finishDate.getTime() - startDate.getTime();
   const daysBetween = timeBetween / (1000 * 60 * 60 * 24)
   return Math.round(daysBetween);
+}
+
+const getYearOfOrder = dateStr => {
+  return dateStr.split('/')[2];
+}
+
+const getMonthOfOrder = dateStr => {
+  const monthStr = dateStr.split('/')[0];
+  return monthStr.length === 1 ? `0${monthStr}` : monthStr;
 }

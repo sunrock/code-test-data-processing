@@ -3,7 +3,13 @@ const
   TOTAL_COST = 'Cost',
   TOTAL_PROFIT = 'Profit';
 
+const
+  PRIORITY_LOW = 'L',
+  PRIORITY_MIDIUM = 'M',
+  PRIORITY_HIGH = 'H',
+  PRIORITY_CRITICAL = 'C'
 
+// Regions Summary
 exports.calcStatGroupByRegion = (regionsListObj, {
   region,
   country,
@@ -33,9 +39,23 @@ exports.calcStatGroupByRegion = (regionsListObj, {
   calcTotalRevenueCostProfit(countryObj.ItemTypes[itemType], revenue, cost, profit);
 }
 
+// ItemTypes Summary
 exports.calcStatGroupByItemTypes = (itemTypesListObj, { itemType, revenue, cost, profit }) => {
   if (!(itemType in itemTypesListObj)) itemTypesListObj[itemType] = {};
   calcTotalRevenueCostProfit(itemTypesListObj[itemType], revenue, cost, profit);
+}
+
+// Number of orders by Priority each month
+exports.calcStatGroupByMonthlyPriority = (priorityObj, { year, month, priority }) => {
+  if (!(year in priorityObj)) priorityObj[year] = {}
+  if (!(month in priorityObj)) {
+    priorityObj[year][month] = {};
+    priorityObj[year][month][PRIORITY_LOW] = 0;
+    priorityObj[year][month][PRIORITY_MIDIUM] = 0;
+    priorityObj[year][month][PRIORITY_HIGH] = 0;
+    priorityObj[year][month][PRIORITY_CRITICAL] = 0;
+  }
+  priorityObj[year][month][priority] += 1;
 }
 
 

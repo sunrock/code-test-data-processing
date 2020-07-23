@@ -5,7 +5,7 @@ const BELONG_TO = 'belong to'
 const dataFormat = require('./dataFormat');
 const accountant = require('./accountant')
 
-exports.readFile = (filePath) => {
+exports.readFile = filePath => {
   const readInterface = readline.createInterface({
     input: fs.createReadStream(filePath),
     // output: process.stdout,
@@ -18,7 +18,8 @@ exports.readFile = (filePath) => {
 
     //
     regions: {},
-    itemTypes: {}
+    itemTypes: {},
+    monthlyPriority: {}
   }
 
   // no need to read the first line
@@ -51,26 +52,30 @@ exports.readFile = (filePath) => {
         summaryObj.itemTypesInCountry[orderObj.country][orderObj.itemType] = BELONG_TO;
       }
 
-      // Region Summary
+      // Regions Summary
       accountant.calcStatGroupByRegion(summaryObj.regions, orderObj);
 
       // ItemTypes Summary
       accountant.calcStatGroupByItemTypes(summaryObj.itemTypes, orderObj);
 
       // Number of orders for each Priority by Month / Year
-
+      accountant.calcStatGroupByMonthlyPriority(summaryObj.monthlyPriority, orderObj)
 
       // Ship days, number of orders etc by Month / Year
     }
 
 
-  }).on('close', function (line) {
+  }).on('close', () => {
     // EOF
     console.log('End Of File');
     readInterface.close();
 
     // console.log(JSON.stringify(summaryObj.regions, null, '    '))
-    console.log(JSON.stringify(summaryObj.itemTypes, null, '    '))
+    // console.log(JSON.stringify(summaryObj.itemTypes, null, '    '))
+    console.log(JSON.stringify(summaryObj.monthlyPriority, null, '    '))
+
 
   });;
 }
+
+
