@@ -20,8 +20,8 @@ const questions =
   ]
 }
 
-// const csvFilePath = './data/medium-data.csv';
-const csvFilePath = './data/node-data-processing-medium-data.csv';
+const csvFilePath = './data/tiny-data.csv';
+// const csvFilePath = './data/node-data-processing-medium-data.csv';
 
 let dataAnalysed = undefined;
 // dataAnalysed = fileReader.readFile(csvFilePath)
