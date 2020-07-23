@@ -52,10 +52,10 @@ exports.readFile = (filePath) => {
       }
 
       // Region Summary
-      accountant.calcStatGroupByRegion(summaryObj, orderObj);
+      accountant.calcStatGroupByRegion(summaryObj.regions, orderObj);
 
       // ItemTypes Summary
-      // accountant.calcStatGroupByItemTypes(summaryObj, orderObj);
+      accountant.calcStatGroupByItemTypes(summaryObj.itemTypes, orderObj);
 
       // Number of orders for each Priority by Month / Year
 
@@ -69,6 +69,8 @@ exports.readFile = (filePath) => {
     console.log('End Of File');
     readInterface.close();
 
-    console.log(JSON.stringify(summaryObj.regions, null, '    '))
+    // console.log(JSON.stringify(summaryObj.regions, null, '    '))
+    console.log(JSON.stringify(summaryObj.itemTypes, null, '    '))
+
   });;
 }
